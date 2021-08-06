@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Plex External Player PotPlayer
 // @namespace    https://github.com/Plex-External-Player-PotPlayer
-// @version      1.4.1
+// @version      1.4.2
 // @description  插件用于激活本地PotPlayer 播放器使用。
 // @author       北京土著 30344386@qq.com
 // @include     /^https?://.*:32400/web.*
@@ -21,7 +21,7 @@ $("head").append(
 // 消息设定
 toastr.options = {
     "closeButton": true,
-    "debug": false,
+    "debug": true,
     "newestOnTop": true,
     "progressBar": true,
     "positionClass": "toast-bottom-right",
@@ -303,7 +303,11 @@ var clickListener = function (e) {
                 viewOffset = "0:0:0.00"
             }
 
-            let poturl = "potplayer://" + authedUrl + " /seek=" + viewOffset + " /sub=" + subtitleUrl + '?X-Plex-Token=' + token;
+            if (subtitleUrl !== ''){
+                subtitleUrl = " /sub=" + subtitleUrl + '?X-Plex-Token=' + token
+            }
+
+            let poturl = "potplayer://" + authedUrl + " /seek=" + viewOffset + subtitleUrl ;
             MSG(poturl, 'debug')
             showToast(getJSLocale(Language.Successfully_parsed_the_path_of_the_movie, { mediatitle: title }))
             window.open(poturl, "_parent");
@@ -406,7 +410,7 @@ var chengeSubtitle = function () {
         let sublist = l_e.find("[class^='SubtitlesStreamsMenu-menuLabelClassName-2ifVd9 SelectedMenuItem-menuLabel-1WTzXp']")
         sublist.each(function (i, i_e) {
             i_e = jQuery(i_e)
-            if (i_e.find('span')[0].innerText.indexOf('External') !== -1) {
+            if (i_e.find('span')[0].innerText.split(' ').length >2 ) {
                 let p_e = jQuery(i_e.parent())
                 if (i_e.parent().find('.plexextplayer').length === 0) {
                     let subTitleID = i_e.parent().parent().attr('value')
