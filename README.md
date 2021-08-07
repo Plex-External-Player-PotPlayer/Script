@@ -1,10 +1,9 @@
 
 # Script
-# [中文](#功能) [English](#Function) 
 # [汇报:问题&错误](https://github.com/Plex-External-Player-PotPlayer/Script/issues)
 # [Report: Issues & Bugs](https://github.com/Plex-External-Player-PotPlayer/Script/issues)
 
-### <a id="功能">功能</a>
+### 功能
 - 使用web浏览器访问Plex 播放影片 激活 potplayer 播放器播放
 - 国际化语言 中文 Or 英文
 - 可与同步播放进度
