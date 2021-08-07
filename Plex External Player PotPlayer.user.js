@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Plex External Player PotPlayer
 // @namespace    https://github.com/Plex-External-Player-PotPlayer
-// @version      1.4.2
+// @version      1.4.3
 // @description  插件用于激活本地PotPlayer 播放器使用。
 // @author       北京土著 30344386@qq.com
 // @include     /^https?://.*:32400/web.*
@@ -240,14 +240,14 @@ var clickListener = function (e) {
                     if (Video[i].attributes['viewOffset'] === undefined) {
                         viewOffset = 0;
                     }
-                    else{                        
+                    else {
                         viewOffset = Video[i].attributes['viewOffset'].value;
                     }
                     title = ' [' + Video[i].attributes['title'].value + '] ';
                     break;
                 }
             }
-            
+
             let parts = response.responseXML.getElementsByTagName('Part');
             for (let i = 0; i < parts.length; i++) {
                 if (parts[i].attributes['file'] !== undefined) {
@@ -280,9 +280,9 @@ var clickListener = function (e) {
                 }
             }
             var authedUrl = mediaurl + '&ratingKey=' + ratingKey + '&X-Plex-Token=' + token;
-            if (viewOffset !== 0){
+            if (viewOffset !== 0) {
                 viewOffset = parseInt(viewOffset)
-    
+
                 let d = 86400000
                 let h = 3600000
                 let m = 60000
@@ -290,7 +290,7 @@ var clickListener = function (e) {
                 let H = 0
                 let M = 0
                 let S = 0
-    
+
                 let _hh = viewOffset % d
                 H = Math.trunc(_hh / h)
                 let _mm = _hh % h
@@ -299,15 +299,15 @@ var clickListener = function (e) {
                 S = Math.trunc(_ss / s)
                 viewOffset = '' + H + ':' + M + ':' + S + '.00'
             }
-            else{
+            else {
                 viewOffset = "0:0:0.00"
             }
 
-            if (subtitleUrl !== ''){
+            if (subtitleUrl !== '') {
                 subtitleUrl = " /sub=" + subtitleUrl + '?X-Plex-Token=' + token
             }
 
-            let poturl = "potplayer://" + authedUrl + " /seek=" + viewOffset + subtitleUrl ;
+            let poturl = "potplayer://" + authedUrl + " /seek=" + viewOffset + subtitleUrl;
             MSG(poturl, 'debug')
             showToast(getJSLocale(Language.Successfully_parsed_the_path_of_the_movie, { mediatitle: title }))
             window.open(poturl, "_parent");
@@ -318,81 +318,22 @@ var clickListener = function (e) {
 // 绑定按钮
 var bindClicks = function () {
     var hasBtn = false;
-    var toolBar = jQuery("#plex-icon-toolbar-play-560").parent().parent();
-    toolBar.children('button').each(function (i, e) {
-        if (jQuery(e).hasClass('plexextplayer'))
-            hasBtn = true;
-    });
+    var DisclosureArrowButton_e = jQuery("[class^='DisclosureArrowButton-disclosureArrowButton-17hnir Link-link-CM9nxg DisclosureArrowButton-medium-3V4GGe DisclosureArrowButton-isSelected-2ebs5E Link-link-CM9nxg Link-default-1mYhCE Link-isSelected-1hxmpf']")
+    if (DisclosureArrowButton_e.length > 0) {
+        var toolBar = jQuery("#plex-icon-toolbar-play-560").parent().parent();
+        toolBar.children('button').each(function (i, e) {
+            if (jQuery(e).hasClass('plexextplayer')) {
+                jQuery(e).addClass('ActionButton-labeledActionButton-3gloir ActionButton-medium-2--fwJ Button-button-1q7C1V Button-primary-BXmP5W Link-link-2WGTd7')
+                hasBtn = true;
+            }
+        });
 
-
-    if (!hasBtn) {
-        var template = jQuery('<button class="play-btn media-poster-btn btn-link plexextplayer" tabindex="-1" title="外部播放器"><i class="glyphicon play plexextplayer plexextplayerico"></i></button>');
-        toolBar.prepend(template);
-        template.click(clickListener);
+        if (!hasBtn) {
+            var template = jQuery('<button class="play-btn media-poster-btn btn-link plexextplayer" tabindex="-1" title="外部播放器"><i class="glyphicon play plexextplayer plexextplayerico"></i></button>');
+            toolBar.prepend(template);
+            template.click(clickListener);
+        }
     }
-
-    // Cover page
-    jQuery('[class^=MetadataPosterCardOverlay-link]').each(function (i, e) {
-        e = jQuery(e);
-        let poster = e.parent();
-        if (poster.length === 1 && poster[0].className.trim().startsWith('MetadataPosterCardOverlay')) {
-            let existingButton = poster.find('.plexextplayerico');
-            if (existingButton.length === 0) {
-                let url = poster.find('a').attr('href');
-                let template = jQuery('<a href="' + url + '" aria-haspopup="false"  aria-role="button" class="" type="button"><i class="glyphicon play plexextplayer plexextplayerico plexextplayericocover"></i></button>');
-                let newButton = template.appendTo(poster);
-                newButton.click(clickListener);
-                poster.mouseenter(function () {
-                    newButton.find('i').css('display', 'block');
-                });
-                poster.mouseleave(function () {
-                    newButton.find('i').css('display', 'none');
-                });
-            }
-        }
-    });
-
-    //Thumbnails
-    jQuery('[class^=PosterCardLink-link]').each(function (i, e) {
-        e = jQuery(e);
-        let thumb = e.parent();
-        if (thumb.length === 1 && thumb[0].className.trim().startsWith('MetadataPosterListItem-card')) {
-            let existingButton = thumb.find('.plexextplayerico');
-            if (existingButton.length === 0) {
-                let url = thumb.find('a').attr('href');
-                let template = jQuery('<a href="' + url + '" aria-haspopup="false"  aria-role="button" class="" type="button"><i class="glyphicon play plexextplayer plexextplayerico plexextplayericocover"></i></button>');
-                let thumbButton = template.appendTo(thumb);
-                thumbButton.click(clickListener);
-                thumb.mouseenter(function () {
-                    thumbButton.find('i').css('display', 'block');
-                });
-                thumb.mouseleave(function () {
-                    thumbButton.find('i').css('display', 'none');
-                });
-            }
-        }
-    });
-
-    // Playlist
-    jQuery("span[class^=' MetadataPosterTitle-singleLineTitle']").each(function (i, e) {
-        e = jQuery(e);
-        let playlistItem = e.closest("[class^='PlaylistItemRow-overlay']").find("[class^='PlaylistItemMetadata-indexContainer']");
-        if (playlistItem.length === 1) {
-            let existingButton = playlistItem.find('.plexextplayerico');
-            if (existingButton.length === 0) {
-                let url = e.find('a').attr('href');
-                let template = jQuery('<a href="' + url + '" aria-haspopup="false"  aria-role="button" class="" type="button"><i class="glyphicon play plexextplayer plexextplayerico plexextplayericocover"></i></button>');
-                let newButton = template.appendTo(playlistItem);
-                newButton.click(clickListener);
-                playlistItem.closest("[class^='PlaylistItemRow-overlay']").mouseenter(function () {
-                    newButton.find('i').css('display', 'block');
-                });
-                playlistItem.closest("[class^='PlaylistItemRow-overlay']").mouseleave(function () {
-                    newButton.find('i').css('display', 'none');
-                });
-            }
-        }
-    });
 };
 
 
@@ -405,13 +346,18 @@ jQuery('body').append('<style>.plexextplayericocover {right: 10px; top: 10px; po
 setInterval(bindClicks, 100);
 
 var chengeSubtitle = function () {
+    jQuery("div[class^='Menu-menu-1qURRT Menu-large-3Xoqor']").css('width', '360px')
     jQuery("div[class^='Menu-menu-1qURRT Menu-large-3Xoqor']").each(function (i, l_e) {
         l_e = jQuery(l_e)
         let sublist = l_e.find("[class^='SubtitlesStreamsMenu-menuLabelClassName-2ifVd9 SelectedMenuItem-menuLabel-1WTzXp']")
         sublist.each(function (i, i_e) {
             i_e = jQuery(i_e)
-            if (i_e.find('span')[0].innerText.split(' ').length >2 ) {
+            if (i_e.find('span').length === 2) {
+                i_e.find('span')[1].textContent = ''
+            }
+            if (i_e.find('span')[0].innerText.split(' ').length > 2) {
                 let p_e = jQuery(i_e.parent())
+                jQuery(p_e.find('button')).css('margin-right', '10px')
                 if (i_e.parent().find('.plexextplayer').length === 0) {
                     let subTitleID = i_e.parent().parent().attr('value')
                     var template = jQuery('<button id="' + subTitleID + '" class="play-btn media-poster-btn btn-link plexextplayer" tabindex="-1" title="外部播放器"><i class="glyphicon play plexextplayer plexextplayerico"></i></button>');
