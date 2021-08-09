@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Plex External Player PotPlayer
 // @namespace    https://github.com/Plex-External-Player-PotPlayer
-// @version      1.4.3
+// @version      1.4.4
 // @description  插件用于激活本地PotPlayer 播放器使用。
 // @author       北京土著 30344386@qq.com
 // @include     /^https?://.*:32400/web.*
@@ -34,7 +34,8 @@ toastr.options = {
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
+    "hideMethod": "fadeOut",
+    "color": 'red'
 };
 
 // 输出消息
@@ -46,6 +47,8 @@ var showToast = function (msg, error) {
     }
     else {
         toastr.success(msg, title);
+        MSG(toastr, 'debug', 'xxx')
+        //toast toast-success
     }
 };
 
@@ -310,6 +313,7 @@ var clickListener = function (e) {
             let poturl = "potplayer://" + authedUrl + " /seek=" + viewOffset + subtitleUrl;
             MSG(poturl, 'debug')
             showToast(getJSLocale(Language.Successfully_parsed_the_path_of_the_movie, { mediatitle: title }))
+            jQuery(e.target).closest('button').blur()
             window.open(poturl, "_parent");
         });
 
@@ -318,12 +322,23 @@ var clickListener = function (e) {
 // 绑定按钮
 var bindClicks = function () {
     var hasBtn = false;
-    var DisclosureArrowButton_e = jQuery("[class^='DisclosureArrowButton-disclosureArrowButton-17hnir Link-link-CM9nxg DisclosureArrowButton-medium-3V4GGe DisclosureArrowButton-isSelected-2ebs5E Link-link-CM9nxg Link-default-1mYhCE Link-isSelected-1hxmpf']")
+    var DisclosureArrowButton_e = ""
+    var button_class = ""
+    var NewDisclosureArrowButton_e = jQuery("[class^='DisclosureArrowButton-disclosureArrowButton-1ReSRg Link-link-3cHWtJ DisclosureArrowButton-medium-1crRwr DisclosureArrowButton-isSelected-1637uR Link-link-3cHWtJ Link-default-5Qrl3D Link-isSelected-3BPEaB']")
+    var OldDisclosureArrowButton_e = jQuery("[class^='DisclosureArrowButton-disclosureArrowButton-17hnir Link-link-CM9nxg DisclosureArrowButton-medium-3V4GGe DisclosureArrowButton-isSelected-2ebs5E Link-link-CM9nxg Link-default-1mYhCE Link-isSelected-1hxmpf']")
+    if (NewDisclosureArrowButton_e.length > 0) {
+        DisclosureArrowButton_e = NewDisclosureArrowButton_e
+        button_class = "ActionButton-actionButton-2ABhR9 ActionButton-labeledActionButton-1rGNFQ ActionButton-medium-1LFys5 Button-button-16qRwa Button-primary-2KRMRA Link-default-tp1vyl Link-link-1Kt-hA"
+    }
+    if (OldDisclosureArrowButton_e.length > 0) {
+        DisclosureArrowButton_e = OldDisclosureArrowButton_e
+        button_class = "ActionButton-labeledActionButton-3gloir ActionButton-medium-2--fwJ Button-button-1q7C1V Button-primary-BXmP5W Link-link-2WGTd7"
+    }
     if (DisclosureArrowButton_e.length > 0) {
         var toolBar = jQuery("#plex-icon-toolbar-play-560").parent().parent();
         toolBar.children('button').each(function (i, e) {
             if (jQuery(e).hasClass('plexextplayer')) {
-                jQuery(e).addClass('ActionButton-labeledActionButton-3gloir ActionButton-medium-2--fwJ Button-button-1q7C1V Button-primary-BXmP5W Link-link-2WGTd7')
+                jQuery(e).addClass(button_class)
                 hasBtn = true;
             }
         });
@@ -346,10 +361,24 @@ jQuery('body').append('<style>.plexextplayericocover {right: 10px; top: 10px; po
 setInterval(bindClicks, 100);
 
 var chengeSubtitle = function () {
-    jQuery("div[class^='Menu-menu-1qURRT Menu-large-3Xoqor']").css('width', '360px')
-    jQuery("div[class^='Menu-menu-1qURRT Menu-large-3Xoqor']").each(function (i, l_e) {
+    var menu = ""
+    var menu_item = ""
+    var NewMenu = jQuery("div[class^='Menu-menu-3iOTrU Menu-large-MtzjGL']")
+    var OldMenu = jQuery("div[class^='Menu-menu-1qURRT Menu-large-3Xoqor']")
+    if (NewMenu.length > 0) {
+        menu = NewMenu
+        menu_item = "[class^='SubtitlesStreamsMenu-menuLabelClassName-34my5L SelectedMenuItem-menuLabel-1VXIKp']"
+    }
+    if (OldMenu.length > 0) {
+        menu = OldMenu
+        menu_item = "[class^='SubtitlesStreamsMenu-menuLabelClassName-2ifVd9 SelectedMenuItem-menuLabel-1WTzXp']"
+    }
+
+    MSG(menu, 'debug', 'xxx')
+    jQuery(menu).css('width', '360px')
+    jQuery(menu).each(function (i, l_e) {
         l_e = jQuery(l_e)
-        let sublist = l_e.find("[class^='SubtitlesStreamsMenu-menuLabelClassName-2ifVd9 SelectedMenuItem-menuLabel-1WTzXp']")
+        let sublist = l_e.find(menu_item)
         sublist.each(function (i, i_e) {
             i_e = jQuery(i_e)
             if (i_e.find('span').length === 2) {
