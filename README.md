@@ -1,4 +1,5 @@
-
+# 由于工作原因项目停止更新
+# Project stopped updating due to work reasons
 # Script
 # [汇报:问题&错误](https://github.com/Plex-External-Player-PotPlayer/Script/issues)
 # [Report: Issues & Bugs](https://github.com/Plex-External-Player-PotPlayer/Script/issues)
